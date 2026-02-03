@@ -141,7 +141,7 @@ body{
   font-weight: bold;
 }
 
-/* ✅ 추가: 알람 제어 스타일 (기존 위치에 영향 없음) */
+/* ✅ 추가된 알람 제어 스타일 (사각형 아래 고정) */
 .alarm-controls {
   margin-top: 50px;
   text-align: center;
@@ -194,12 +194,12 @@ body{
 </div>
 
 <div class="alarm-controls">
-  <button id="alarmOn" class="alarm-btn" onclick="toggleAlarm(true)">🔔 알람 켜기</button>
+  <button id="alarmOn" class="alarm-btn" onclick="toggleAlarm(true)">🔔 알람 테스트 실행</button>
   <button id="alarmOff" class="alarm-btn active" onclick="toggleAlarm(false)">🔕 알람 끄기</button>
 </div>
 
 <script>
-let activeEntries = new Set(); // 활성화된 입구들
+let activeEntries = new Set(); 
 
 const order = [
   [0,1,2,3],
@@ -232,7 +232,7 @@ function draw(){
     const d=document.createElement("div");
     d.className="time";
     d.innerText=t.toTimeString().slice(0,5);
-    d.dataset.time = t.getTime();   // ⭐ 이 줄 추가
+    d.dataset.time = t.getTime();
     document.getElementById("c"+order[select.value][i%4]).appendChild(d);
     t=new Date(t.getTime()+40*60000);
     i++;
@@ -275,34 +275,25 @@ function updateTimeStatus(){
   });
 
   if(nearestPast){
-  nearestPast.classList.remove("expired"); // ⭐ 취소선 제거
+  nearestPast.classList.remove("expired"); 
   nearestPast.classList.add("current-nearest");
   }
 
-  // ✅ 알람 로직 실행
   checkAlarm();
 }
 
 setInterval(updateTimeStatus, 1000);
 
 function highlightEntry(corner){
-
-  // ⭐ 현재와 가장 가까운 시간 (최우선 보호)
   const protectedItem = document.querySelector(".current-nearest");
-
-  /* 🔁 이미 선택된 입구 → 토글 OFF */
   if(activeEntries.has(corner)){
     document.querySelectorAll("#c"+corner+" .entry-highlight")
       .forEach(e => e.classList.remove("entry-highlight"));
     activeEntries.delete(corner);
     return;
   }
-
-  /* ➕ 새 입구 ON */
   activeEntries.add(corner);
-
   const now = Date.now();
-
   const list = [...document.querySelectorAll("#c"+corner+" .time")]
     .filter(el => el !== protectedItem)
     .map(el => ({
@@ -317,7 +308,7 @@ function highlightEntry(corner){
   });
 }
 
-// ✅ 알람 관련 스크립트
+// ✅ [테스트용 수정] 알람 로직
 let isAlarmEnabled = false;
 let lastAlarmTime = "";
 
@@ -325,8 +316,15 @@ function toggleAlarm(status) {
   isAlarmEnabled = status;
   document.getElementById('alarmOn').classList.toggle('active', status);
   document.getElementById('alarmOff').classList.toggle('active', !status);
+  
+  // 🔔 [즉시 테스트] 버튼을 누르자마자 5초간 진동 실행
   if(status) {
-    if (navigator.vibrate) navigator.vibrate(200);
+    if (navigator.vibrate) {
+      navigator.vibrate(5000);
+      alert("진동이 시작됩니다! (5초)");
+    } else {
+      alert("이 브라우저는 진동 기능을 지원하지 않습니다.");
+    }
   }
 }
 
@@ -336,12 +334,10 @@ function checkAlarm() {
   const now = new Date();
   const currentTimeStr = now.getHours() + ":" + now.getMinutes();
   
-  // 알람 범위: 10:00 ~ 18:00
-  if (now.getHours() >= 10 && now.getHours() < 18) {
-    if (lastAlarmTime !== currentTimeStr) {
-      if (navigator.vibrate) navigator.vibrate(5000);
-      lastAlarmTime = currentTimeStr;
-    }
+  // [테스트용] 시간 제한 없이 매 분 정각마다 진동
+  if (lastAlarmTime !== currentTimeStr) {
+    if (navigator.vibrate) navigator.vibrate(5000);
+    lastAlarmTime = currentTimeStr;
   }
 }
 </script>
