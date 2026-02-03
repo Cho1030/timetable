@@ -19,6 +19,7 @@ body{
   padding:10px;
   font-family: Arial, sans-serif;
   background:#f9f9f9;
+  transition: background 0.3s; /* ✅ 배경색 변경 시 부드럽게 전환 */
 }
 
 /* 제목 */
@@ -141,7 +142,7 @@ body{
   font-weight: bold;
 }
 
-/* ✅ 추가된 알람 제어 스타일 (사각형 아래 고정) */
+/* ✅ 알람 제어 영역 (하단 배치) */
 .alarm-controls {
   margin-top: 50px;
   text-align: center;
@@ -194,7 +195,7 @@ body{
 </div>
 
 <div class="alarm-controls">
-  <button id="alarmOn" class="alarm-btn" onclick="toggleAlarm(true)">🔔 알람 테스트 실행</button>
+  <button id="alarmOn" class="alarm-btn" onclick="toggleAlarm(true)">🔔 알람 켜기 (테스트)</button>
   <button id="alarmOff" class="alarm-btn active" onclick="toggleAlarm(false)">🔕 알람 끄기</button>
 </div>
 
@@ -308,23 +309,45 @@ function highlightEntry(corner){
   });
 }
 
-// ✅ [테스트용 수정] 알람 로직
+// ✅ [아이폰 대응] 알람 및 시각/소리 효과
 let isAlarmEnabled = false;
 let lastAlarmTime = "";
+const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+function playBeep() {
+  const osc = audioCtx.createOscillator();
+  const gain = audioCtx.createGain();
+  osc.connect(gain);
+  gain.connect(audioCtx.destination);
+  osc.type = "sine";
+  osc.frequency.setValueAtTime(880, audioCtx.currentTime); // 높은 A음
+  gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+  osc.start();
+  osc.stop(audioCtx.currentTime + 1); // 1초간 비프음
+}
+
+function triggerAlarmEffects() {
+  // 1. 진동 (안드로이드)
+  if (navigator.vibrate) navigator.vibrate(5000);
+  
+  // 2. 소리 (아이폰/공통)
+  playBeep();
+
+  // 3. 시각 효과 (아이폰/공통): 배경색을 붉은색으로 변경 후 5초 뒤 복구
+  document.body.style.backgroundColor = "#ffcdd2";
+  setTimeout(() => {
+    document.body.style.backgroundColor = "#f9f9f9";
+  }, 5000);
+}
 
 function toggleAlarm(status) {
   isAlarmEnabled = status;
   document.getElementById('alarmOn').classList.toggle('active', status);
   document.getElementById('alarmOff').classList.toggle('active', !status);
   
-  // 🔔 [즉시 테스트] 버튼을 누르자마자 5초간 진동 실행
   if(status) {
-    if (navigator.vibrate) {
-      navigator.vibrate(5000);
-      alert("진동이 시작됩니다! (5초)");
-    } else {
-      alert("이 브라우저는 진동 기능을 지원하지 않습니다.");
-    }
+    if (audioCtx.state === 'suspended') audioCtx.resume(); // 아이폰 오디오 잠금 해제
+    triggerAlarmEffects(); // 즉시 테스트 효과 실행
   }
 }
 
@@ -334,9 +357,9 @@ function checkAlarm() {
   const now = new Date();
   const currentTimeStr = now.getHours() + ":" + now.getMinutes();
   
-  // [테스트용] 시간 제한 없이 매 분 정각마다 진동
+  // 매 분 정각마다 알람 발생
   if (lastAlarmTime !== currentTimeStr) {
-    if (navigator.vibrate) navigator.vibrate(5000);
+    triggerAlarmEffects();
     lastAlarmTime = currentTimeStr;
   }
 }
