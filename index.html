@@ -195,8 +195,8 @@ body{
 </div>
 
 <div class="alarm-controls">
-  <button id="alarmOn" class="alarm-btn" onclick="toggleAlarm(true)">🔔 알람 켜기</button>
-  <button id="alarmOff" class="alarm-btn active" onclick="toggleAlarm(false)">🔕 알람 끄기</button>
+  <button id="alarmOn" class="alarm-btn" onclick="toggleAlarm(true)">🔔 알람 시작</button>
+  <button id="alarmOff" class="alarm-btn active" onclick="toggleAlarm(false)">🔕 알람 종료</button>
 </div>
 
 <script>
@@ -243,7 +243,6 @@ function draw(){
 input.addEventListener("input",draw);
 select.addEventListener("change",draw);
 
-// ✅ 초 단위까지 표시하도록 수정
 function updateNow(){
   const n=new Date();
   document.getElementById("nowTime").innerText=
@@ -312,10 +311,9 @@ function highlightEntry(corner){
 }
 
 let isAlarmEnabled = false;
-let lastAlarmTime = "";
+let lastAlarmMinuteMark = -1; // 마지막으로 알람이 울린 분 저장
 const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
-// ✅ 비프음을 3번 반복하도록 수정
 function playBeep(count) {
   if (count <= 0) return;
   const osc = audioCtx.createOscillator();
@@ -326,26 +324,23 @@ function playBeep(count) {
   osc.frequency.setValueAtTime(880, audioCtx.currentTime);
   gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
   osc.start();
-  osc.stop(audioCtx.currentTime + 0.5); // 0.5초 소리
+  osc.stop(audioCtx.currentTime + 0.5);
   
   osc.onended = () => {
-    setTimeout(() => playBeep(count - 1), 500); // 0.5초 간격으로 반복
+    setTimeout(() => playBeep(count - 1), 500);
   };
 }
 
 function triggerAlarmEffects() {
   if (navigator.vibrate) navigator.vibrate(5000);
-  
-  playBeep(3); // 비프음 3번 실행
+  playBeep(3);
 
-  // ✅ 배경색 3분(180000ms) 유지
   document.body.style.backgroundColor = "#ffcdd2";
   setTimeout(() => {
-    // 알람이 꺼졌거나 새로운 알람이 시작되지 않았을 때만 원상복구
     if (document.body.style.backgroundColor === "rgb(255, 205, 210)") {
       document.body.style.backgroundColor = "#f9f9f9";
     }
-  }, 180000);
+  }, 180000); // 3분 유지
 }
 
 function toggleAlarm(status) {
@@ -355,9 +350,10 @@ function toggleAlarm(status) {
   
   if(status) {
     if (audioCtx.state === 'suspended') audioCtx.resume();
-    triggerAlarmEffects();
+    // 켜는 즉시 테스트를 원하시면 아래 주석을 해제하세요.
+    // triggerAlarmEffects();
   } else {
-    document.body.style.backgroundColor = "#f9f9f9"; // 알람 끌 때 배경 즉시 복구
+    document.body.style.backgroundColor = "#f9f9f9";
   }
 }
 
@@ -365,11 +361,15 @@ function checkAlarm() {
   if (!isAlarmEnabled) return;
 
   const now = new Date();
-  const currentTimeStr = now.getHours() + ":" + now.getMinutes();
-  
-  if (lastAlarmTime !== currentTimeStr) {
-    triggerAlarmEffects();
-    lastAlarmTime = currentTimeStr;
+  const h = now.getHours();
+  const m = now.getMinutes();
+
+  // ✅ 조건: 10시부터 18시(오후 6시)까지, 20분 간격 (0분, 20분, 40분)
+  if (h >= 10 && h < 18) {
+    if (m % 20 === 0 && m !== lastAlarmMinuteMark) {
+      triggerAlarmEffects();
+      lastAlarmMinuteMark = m;
+    }
   }
 }
 </script>
