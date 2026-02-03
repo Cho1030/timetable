@@ -19,7 +19,7 @@ body{
   padding:10px;
   font-family: Arial, sans-serif;
   background:#f9f9f9;
-  transition: background 0.3s; /* ✅ 배경색 변경 시 부드럽게 전환 */
+  transition: background 0.3s;
 }
 
 /* 제목 */
@@ -142,7 +142,7 @@ body{
   font-weight: bold;
 }
 
-/* ✅ 알람 제어 영역 (하단 배치) */
+/* 알람 제어 영역 */
 .alarm-controls {
   margin-top: 50px;
   text-align: center;
@@ -167,7 +167,7 @@ body{
 
 <div class="title">
   <h2>📋 타임테이블</h2>
-  <span id="nowTime">--:--</span>
+  <span id="nowTime">--:--:--</span>
 </div>
 
 <div class="controls">
@@ -195,7 +195,7 @@ body{
 </div>
 
 <div class="alarm-controls">
-  <button id="alarmOn" class="alarm-btn" onclick="toggleAlarm(true)">🔔 알람 켜기 (테스트)</button>
+  <button id="alarmOn" class="alarm-btn" onclick="toggleAlarm(true)">🔔 알람 켜기</button>
   <button id="alarmOff" class="alarm-btn active" onclick="toggleAlarm(false)">🔕 알람 끄기</button>
 </div>
 
@@ -243,11 +243,13 @@ function draw(){
 input.addEventListener("input",draw);
 select.addEventListener("change",draw);
 
+// ✅ 초 단위까지 표시하도록 수정
 function updateNow(){
   const n=new Date();
   document.getElementById("nowTime").innerText=
     String(n.getHours()).padStart(2,"0")+":"+
-    String(n.getMinutes()).padStart(2,"0");
+    String(n.getMinutes()).padStart(2,"0")+":"+
+    String(n.getSeconds()).padStart(2,"0");
 }
 setInterval(updateNow,1000);
 updateNow();
@@ -309,35 +311,41 @@ function highlightEntry(corner){
   });
 }
 
-// ✅ [아이폰 대응] 알람 및 시각/소리 효과
 let isAlarmEnabled = false;
 let lastAlarmTime = "";
 const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
-function playBeep() {
+// ✅ 비프음을 3번 반복하도록 수정
+function playBeep(count) {
+  if (count <= 0) return;
   const osc = audioCtx.createOscillator();
   const gain = audioCtx.createGain();
   osc.connect(gain);
   gain.connect(audioCtx.destination);
   osc.type = "sine";
-  osc.frequency.setValueAtTime(880, audioCtx.currentTime); // 높은 A음
+  osc.frequency.setValueAtTime(880, audioCtx.currentTime);
   gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
   osc.start();
-  osc.stop(audioCtx.currentTime + 1); // 1초간 비프음
+  osc.stop(audioCtx.currentTime + 0.5); // 0.5초 소리
+  
+  osc.onended = () => {
+    setTimeout(() => playBeep(count - 1), 500); // 0.5초 간격으로 반복
+  };
 }
 
 function triggerAlarmEffects() {
-  // 1. 진동 (안드로이드)
   if (navigator.vibrate) navigator.vibrate(5000);
   
-  // 2. 소리 (아이폰/공통)
-  playBeep();
+  playBeep(3); // 비프음 3번 실행
 
-  // 3. 시각 효과 (아이폰/공통): 배경색을 붉은색으로 변경 후 5초 뒤 복구
+  // ✅ 배경색 3분(180000ms) 유지
   document.body.style.backgroundColor = "#ffcdd2";
   setTimeout(() => {
-    document.body.style.backgroundColor = "#f9f9f9";
-  }, 5000);
+    // 알람이 꺼졌거나 새로운 알람이 시작되지 않았을 때만 원상복구
+    if (document.body.style.backgroundColor === "rgb(255, 205, 210)") {
+      document.body.style.backgroundColor = "#f9f9f9";
+    }
+  }, 180000);
 }
 
 function toggleAlarm(status) {
@@ -346,8 +354,10 @@ function toggleAlarm(status) {
   document.getElementById('alarmOff').classList.toggle('active', !status);
   
   if(status) {
-    if (audioCtx.state === 'suspended') audioCtx.resume(); // 아이폰 오디오 잠금 해제
-    triggerAlarmEffects(); // 즉시 테스트 효과 실행
+    if (audioCtx.state === 'suspended') audioCtx.resume();
+    triggerAlarmEffects();
+  } else {
+    document.body.style.backgroundColor = "#f9f9f9"; // 알람 끌 때 배경 즉시 복구
   }
 }
 
@@ -357,7 +367,6 @@ function checkAlarm() {
   const now = new Date();
   const currentTimeStr = now.getHours() + ":" + now.getMinutes();
   
-  // 매 분 정각마다 알람 발생
   if (lastAlarmTime !== currentTimeStr) {
     triggerAlarmEffects();
     lastAlarmTime = currentTimeStr;
