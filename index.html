@@ -13,50 +13,55 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
-/* 기존 스타일 */
-body{ margin:0; padding:10px; font-family: Arial, sans-serif; background:#f9f9f9; padding-bottom: 100px; transition: background 0.3s; }
+/* 기존 스타일 유지 */
+body{ margin:0; padding:10px; font-family: Arial, sans-serif; background:#f9f9f9; transition: background 0.3s; }
 .title{ display:flex; justify-content:center; align-items:baseline; gap:10px; margin-bottom:6px; }
 .title h2{ margin:0; font-size:18px; }
 #nowTime{ font-size:26px; font-weight:900; color:#d32f2f; }
 .controls{ text-align:center; margin-bottom:6px; }
 .controls input, .controls select{ font-size:14px; padding:4px; width:70px; margin:2px; text-align:center; }
-#container{ position:relative; width:260px; height:260px; margin:0 auto; }
-#square{ position:absolute; top:20px; left:20px; width:220px; height:220px; border:3px solid #3f51b5; display:grid; grid-template-columns:1fr 1fr; grid-template-rows:1fr 1fr; box-sizing:border-box; }
+
+/* 컨테이너 및 사각형 설정 */
+#container{ position:relative; width:260px; margin:0 auto; padding-bottom: 60px; } /* 버튼 공간 확보 */
+#square{ position:relative; width:220px; height:220px; border:3px solid #3f51b5; display:grid; grid-template-columns:1fr 1fr; grid-template-rows:1fr 1fr; box-sizing:border-box; margin: 20px auto; }
+
 .time{ background:#e3f2fd; border-radius:10px; padding:3px 8px; margin:2px 0; font-size:13px; white-space:nowrap; }
 .top-left, .bottom-left{ display:flex; flex-direction:column; align-items:flex-start; padding-left:4px; text-align:left; }
 .top-right, .bottom-right{ display:flex; flex-direction:column; align-items:flex-end; padding-right:4px; text-align:right; }
 .bottom-left, .bottom-right{ justify-content: flex-end; }
-.corner-btn{ position:absolute; font-size:12px; padding:4px 8px; border-radius:6px; border:2px solid #3f51b5; background:#fff; }
-.btn-tl{top:0;left:0;transform:translate(-60%,-60%)}
-.btn-tr{top:0;right:0;transform:translate(60%,-60%)}
-.btn-bl{bottom:0;left:0;transform:translate(-60%,60%)}
-.btn-br{bottom:0;right:0;transform:translate(60%,60%)}
+
+/* 입구 버튼 */
+.corner-btn{ position:absolute; font-size:12px; padding:4px 8px; border-radius:6px; border:2px solid #3f51b5; background:#fff; z-index: 10; }
+.btn-tl{top: -10px; left: -10px;}
+.btn-tr{top: -10px; right: -10px;}
+.btn-bl{bottom: -10px; left: -10px;}
+.btn-br{bottom: -10px; right: -10px;}
+
 .expired { color: #999; background: #eee; text-decoration: line-through; }
 .current-nearest { background: #ffeb3b; font-weight: bold; }
 .entry-highlight { background: #c8e6c9; font-weight: bold; }
 
-/* ✅ 추가: 알람 제어 UI */
-.alarm-area {
-  position: fixed;
-  bottom: 20px;
-  left: 0;
-  right: 0;
+/* ✅ 알람 버튼 위치 수정: 사각형 바로 아래 */
+.alarm-wrapper {
   text-align: center;
-  pointer-events: none;
+  margin-top: 30px;
 }
 .alarm-btn {
-  pointer-events: auto;
-  padding: 12px 24px;
-  font-size: 16px;
+  padding: 10px 20px;
+  font-size: 15px;
   font-weight: bold;
-  border-radius: 50px;
-  border: none;
-  background: #3f51b5;
-  color: white;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+  border-radius: 20px;
+  border: 2px solid #3f51b5;
+  background: #fff;
+  color: #3f51b5;
   cursor: pointer;
+  transition: all 0.2s;
 }
-.alarm-btn.active { background: #f44336; }
+.alarm-btn.active {
+  background: #f44336;
+  color: #fff;
+  border-color: #f44336;
+}
 </style>
 </head>
 
@@ -78,24 +83,25 @@ body{ margin:0; padding:10px; font-family: Arial, sans-serif; background:#f9f9f9
 </div>
 
 <div id="container">
- <div id="square">
-  <div class="top-left" id="c0"></div>
-  <div class="top-right" id="c1"></div>
-  <div class="bottom-left" id="c3"></div>
-  <div class="bottom-right" id="c2"></div>
-</div>
-<button class="corner-btn btn-tl" onclick="highlightEntry(0)">메인</button>
-<button class="corner-btn btn-tr" onclick="highlightEntry(1)">메인</button>
-<button class="corner-btn btn-br" onclick="highlightEntry(2)">메인</button>
-<button class="corner-btn btn-bl" onclick="highlightEntry(3)">메인</button>
-</div>
+  <div id="square">
+    <div class="top-left" id="c0"></div>
+    <div class="top-right" id="c1"></div>
+    <div class="bottom-left" id="c3"></div>
+    <div class="bottom-right" id="c2"></div>
+    
+    <button class="corner-btn btn-tl" onclick="highlightEntry(0)">메인</button>
+    <button class="corner-btn btn-tr" onclick="highlightEntry(1)">메인</button>
+    <button class="corner-btn btn-br" onclick="highlightEntry(2)">메인</button>
+    <button class="corner-btn btn-bl" onclick="highlightEntry(3)">메인</button>
+  </div>
 
-<div class="alarm-area">
-  <button id="alarmToggle" class="alarm-btn" onclick="toggleAlarm()">🔔 20분 알람 시작</button>
+  <div class="alarm-wrapper">
+    <button id="alarmToggle" class="alarm-btn" onclick="toggleAlarm()">🔔 20분 알람 켜기</button>
+  </div>
 </div>
 
 <script>
-/* 기존 로직 */
+/* 기존 로직 및 알람 로직 동일하게 유지 */
 let activeEntries = new Set();
 const order = [[0,1,2,3],[1,2,3,0],[2,3,0,1],[3,0,1,2]];
 const input = document.getElementById("startTime");
@@ -131,7 +137,7 @@ function updateNow(){
   document.getElementById("nowTime").innerText=
     String(n.getHours()).padStart(2,"0")+":"+
     String(n.getMinutes()).padStart(2,"0");
-  checkAlarm(n); // 알람 체크
+  checkAlarm(n);
 }
 setInterval(updateNow,1000);
 updateNow();
@@ -173,7 +179,7 @@ function highlightEntry(corner){
   list.forEach(o => { o.el.classList.add("entry-highlight"); });
 }
 
-/* ✅ 알람 및 자동 종료 로직 */
+/* 알람 로직 */
 let alarmActive = false;
 let lastTriggeredMinute = -1;
 
@@ -181,46 +187,30 @@ function toggleAlarm() {
   alarmActive = !alarmActive;
   const btn = document.getElementById("alarmToggle");
   if(alarmActive) {
-    btn.innerText = "🔕 알람 종료하기";
+    btn.innerText = "🔕 알람 끄기";
     btn.classList.add("active");
-    // 아이폰 진동 권한 확인용 (선택)
-    if(navigator.vibrate) navigator.vibrate(200);
   } else {
-    btn.innerText = "🔔 20분 알람 시작";
+    btn.innerText = "🔔 20분 알람 켜기";
     btn.classList.remove("active");
   }
 }
 
 function checkAlarm(now) {
   if (!alarmActive) return;
-
   const h = now.getHours();
   const m = now.getMinutes();
 
-  // 1. 18시(오후 6시) 자동 종료
   if (h >= 18) {
     alarmActive = false;
-    const btn = document.getElementById("alarmToggle");
-    btn.innerText = "🔔 20분 알람 시작";
-    btn.classList.remove("active");
+    document.getElementById("alarmToggle").classList.remove("active");
     return;
   }
 
-  // 2. 10시부터 18시 사이, 20분 간격 (0, 20, 40분)
   if (h >= 10 && m % 20 === 0 && m !== lastTriggeredMinute) {
-    triggerAlarm();
+    if (navigator.vibrate) navigator.vibrate([400, 200, 400]);
+    document.body.style.background = "#ffcdd2";
+    setTimeout(() => { document.body.style.background = "#f9f9f9"; }, 3000);
     lastTriggeredMinute = m;
-  }
-}
-
-function triggerAlarm() {
-  // 시각적 알림 (배경색 변경)
-  document.body.style.background = "#ffcdd2";
-  setTimeout(() => { document.body.style.background = "#f9f9f9"; }, 3000);
-
-  // 진동 알림 (지원 기기)
-  if (navigator.vibrate) {
-    navigator.vibrate([400, 200, 400]);
   }
 }
 </script>
