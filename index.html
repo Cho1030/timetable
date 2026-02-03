@@ -1,55 +1,167 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="타임테이블">
+<link rel="apple-touch-icon" href="icon-192.png">
+
+<link rel="manifest" href="manifest.json">
 <meta charset="UTF-8">
 <title>타임테이블</title>
+
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="apple-mobile-web-app-capable" content="yes">
+
 <style>
-/* 1. 원본 레이아웃 및 위치값 (절대 수정 금지) */
-body{ margin:0; padding:10px; font-family: Arial, sans-serif; background:#f9f9f9; transition: background 0.3s; }
-.title{ display:flex; justify-content:center; align-items:baseline; gap:10px; margin-bottom:6px; }
-.title h2{ margin:0; font-size:18px; }
-#nowTime{ font-size:26px; font-weight:900; color:#d32f2f; }
-.controls{ text-align:center; margin-bottom:6px; }
-.controls input, .controls select{ font-size:14px; padding:4px; width:70px; margin:2px; text-align:center; }
+body{
+  margin:0;
+  padding:10px;
+  font-family: Arial, sans-serif;
+  background:#f9f9f9;
+}
 
-#container{ position:relative; width:260px; height:260px; margin:0 auto; }
-#square{ position:absolute; top:20px; left:20px; width:220px; height:220px; border:3px solid #3f51b5; display:grid; grid-template-columns:1fr 1fr; grid-template-rows:1fr 1fr; box-sizing:border-box; }
+/* 제목 */
+.title{
+  display:flex;
+  justify-content:center;
+  align-items:baseline;
+  gap:10px;
+  margin-bottom:6px;
+}
+.title h2{
+  margin:0;
+  font-size:18px;
+}
+#nowTime{
+  font-size:26px;
+  font-weight:900;
+  color:#d32f2f;
+}
 
-.time{ background:#e3f2fd; border-radius:10px; padding:3px 8px; margin:2px 0; font-size:13px; white-space:nowrap; }
-.top-left, .bottom-left{ display:flex; flex-direction:column; align-items:flex-start; padding-left:4px; text-align:left; }
-.top-right, .bottom-right{ display:flex; flex-direction:column; align-items:flex-end; padding-right:4px; text-align:right; }
-.bottom-left, .bottom-right{ justify-content: flex-end; }
+/* 입력 영역 */
+.controls{
+  text-align:center;
+  margin-bottom:6px;
+}
+.controls input,
+.controls select{
+  font-size:14px;
+  padding:4px;
+  width:70px;
+  margin:2px;
+  text-align:center;
+}
 
-.corner-btn{ position:absolute; font-size:12px; padding:4px 8px; border-radius:6px; border:2px solid #3f51b5; background:#fff; cursor: pointer; z-index: 10; }
+/* 전체 영역 */
+#container{
+  position:relative;
+  width:260px;
+  height:260px;
+  margin:0 auto;
+}
+
+#square{
+  position:absolute;
+  top:20px;
+  left:20px;
+  width:220px;
+  height:220px;
+  border:3px solid #3f51b5;
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  grid-template-rows:1fr 1fr;
+  box-sizing:border-box;
+}
+
+/* 시간 표시 공통 */
+.time{
+  background:#e3f2fd;
+  border-radius:10px;
+  padding:3px 8px;
+  margin:2px 0;
+  font-size:13px;
+  white-space:nowrap;
+}
+
+/* 🔥 정렬 핵심 (완전 고정) */
+.top-left,
+.bottom-left{
+  display:flex;
+  flex-direction:column;
+  align-items:flex-start;
+  padding-left:4px;
+  text-align:left;
+}
+
+.top-right,
+.bottom-right{
+  display:flex;
+  flex-direction:column;
+  align-items:flex-end;
+  padding-right:4px;
+  text-align:right;
+}
+
+.bottom-left,
+.bottom-right{
+  justify-content: flex-end;
+}
+
+/* 입구 버튼 */
+.corner-btn{
+  position:absolute;
+  font-size:12px;
+  padding:4px 8px;
+  border-radius:6px;
+  border:2px solid #3f51b5;
+  background:#fff;
+}
 .btn-tl{top:0;left:0;transform:translate(-60%,-60%)}
 .btn-tr{top:0;right:0;transform:translate(60%,-60%)}
 .btn-bl{bottom:0;left:0;transform:translate(-60%,60%)}
 .btn-br{bottom:0;right:0;transform:translate(60%,60%)}
 
-.expired { color: #999; background: #eee; text-decoration: line-through; }
-.current-nearest { background: #ffeb3b; font-weight: bold; }
-.entry-highlight { background: #c8e6c9; font-weight: bold; }
-
-/* 2. ✅ 알람 버튼을 '레이아웃에 영향을 주지 않는 절대 좌표'로 설정 */
-.alarm-fixed-area {
-  position: absolute; /* 다른 요소의 위치를 밀어내지 않음 */
-  top: 280px;         /* 사각형(260px) 아래에 고정 */
-  left: 50%;
-  transform: translateX(-50%);
-  width: 260px;
-  text-align: center;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 10px;
+/* 지나간 시간 */
+.expired {
+  color: #999;
+  background: #eee;
+  text-decoration: line-through;
 }
-.alarm-btn-group { display: flex; gap: 8px; }
-.alarm-btn { padding: 8px 12px; font-size: 13px; border-radius: 8px; border: 1px solid #3f51b5; background: white; cursor: pointer; white-space: nowrap; }
-.alarm-btn.active { background: #3f51b5; color: white; }
-#stopVibeBtn { background: #f44336; color: white; border: none; display: none; padding: 10px 20px; border-radius: 20px; font-weight: bold; }
+
+/* 현재 시간과 가장 가까운 과거 시간 */
+.current-nearest {
+  background: #ffeb3b;
+  font-weight: bold;
+}
+
+/* 입구 버튼으로 강조된 시간 */
+.entry-highlight {
+  background: #c8e6c9;
+  font-weight: bold;
+}
+
+/* ✅ 추가: 알람 제어 스타일 (기존 위치에 영향 없음) */
+.alarm-controls {
+  margin-top: 50px;
+  text-align: center;
+}
+.alarm-btn {
+  font-size: 14px;
+  padding: 8px 12px;
+  margin: 5px;
+  border-radius: 6px;
+  border: 2px solid #3f51b5;
+  background: #fff;
+  cursor: pointer;
+}
+.alarm-btn.active {
+  background: #3f51b5;
+  color: white;
+}
 </style>
 </head>
+
 <body>
 
 <div class="title">
@@ -68,56 +180,65 @@ body{ margin:0; padding:10px; font-family: Arial, sans-serif; background:#f9f9f9
 </div>
 
 <div id="container">
-  <div id="square">
-    <div class="top-left" id="c0"></div>
-    <div class="top-right" id="c1"></div>
-    <div class="bottom-left" id="c3"></div>
-    <div class="bottom-right" id="c2"></div>
-  </div>
+ <div id="square">
+  <div class="top-left" id="c0"></div>
+  <div class="top-right" id="c1"></div>
+  <div class="bottom-left" id="c3"></div>
+  <div class="bottom-right" id="c2"></div>
+</div>
 
-  <button class="corner-btn btn-tl" onclick="highlightEntry(0)">메인</button>
-  <button class="corner-btn btn-tr" onclick="highlightEntry(1)">메인</button>
-  <button class="corner-btn btn-br" onclick="highlightEntry(2)">메인</button>
-  <button class="corner-btn btn-bl" onclick="highlightEntry(3)">메인</button>
+<button class="corner-btn btn-tl" onclick="highlightEntry(0)">메인</button>
+<button class="corner-btn btn-tr" onclick="highlightEntry(1)">메인</button>
+<button class="corner-btn btn-br" onclick="highlightEntry(2)">메인</button>
+<button class="corner-btn btn-bl" onclick="highlightEntry(3)">메인</button>
+</div>
 
-  <div class="alarm-fixed-area">
-    <div class="alarm-btn-group">
-      <button id="alarmOnBtn" class="alarm-btn" onclick="setAlarmState(true)">🔔 알람 켜기</button>
-      <button id="alarmOffBtn" class="alarm-btn" onclick="setAlarmState(false)">🔕 알람 끄기</button>
-    </div>
-    <button id="stopVibeBtn" onclick="stopVibration()">🛑 진동 멈춤</button>
-  </div>
+<div class="alarm-controls">
+  <button id="alarmOn" class="alarm-btn" onclick="toggleAlarm(true)">🔔 알람 켜기</button>
+  <button id="alarmOff" class="alarm-btn active" onclick="toggleAlarm(false)">🔕 알람 끄기</button>
 </div>
 
 <script>
-/* 원본 로직 유지 */
-let activeEntries = new Set();
-const order = [[0,1,2,3],[1,2,3,0],[2,3,0,1],[3,0,1,2]];
+let activeEntries = new Set(); // 활성화된 입구들
+
+const order = [
+  [0,1,2,3],
+  [1,2,3,0],
+  [2,3,0,1],
+  [3,0,1,2]
+];
+
 const input = document.getElementById("startTime");
 const select = document.getElementById("startCorner");
 
 function draw(){
   const v = input.value;
   if(v.length!==4) return;
+
   const h=parseInt(v.slice(0,2));
   const m=parseInt(v.slice(2,4));
   if(h>23||m>59) return;
+
   document.querySelectorAll("#square > div").forEach(d=>d.innerHTML="");
+
   let t=new Date();
   t.setHours(h,m,0,0);
+
   let end=new Date();
   end.setHours(18,0,0,0);
+
   let i=0;
   while(t<=end){
     const d=document.createElement("div");
     d.className="time";
     d.innerText=t.toTimeString().slice(0,5);
-    d.dataset.time = t.getTime();
+    d.dataset.time = t.getTime();   // ⭐ 이 줄 추가
     document.getElementById("c"+order[select.value][i%4]).appendChild(d);
     t=new Date(t.getTime()+40*60000);
     i++;
   }
 }
+
 input.addEventListener("input",draw);
 select.addEventListener("change",draw);
 
@@ -126,7 +247,6 @@ function updateNow(){
   document.getElementById("nowTime").innerText=
     String(n.getHours()).padStart(2,"0")+":"+
     String(n.getMinutes()).padStart(2,"0");
-  checkAlarm(n);
 }
 setInterval(updateNow,1000);
 updateNow();
@@ -134,80 +254,97 @@ updateNow();
 function updateTimeStatus(){
   const now = Date.now();
   const times = document.querySelectorAll(".time");
+
   let nearestPast = null;
   let nearestDiff = Infinity;
+
   times.forEach(el => {
     const t = parseInt(el.dataset.time);
+
     el.classList.remove("expired", "current-nearest");
+
     if(t < now){
       el.classList.add("expired");
+
       const diff = now - t;
-      if(diff < nearestDiff){ nearestDiff = diff; nearestPast = el; }
+      if(diff < nearestDiff){
+        nearestDiff = diff;
+        nearestPast = el;
+      }
     }
   });
+
   if(nearestPast){
-    nearestPast.classList.remove("expired");
-    nearestPast.classList.add("current-nearest");
+  nearestPast.classList.remove("expired"); // ⭐ 취소선 제거
+  nearestPast.classList.add("current-nearest");
   }
+
+  // ✅ 알람 로직 실행
+  checkAlarm();
 }
+
 setInterval(updateTimeStatus, 1000);
 
 function highlightEntry(corner){
+
+  // ⭐ 현재와 가장 가까운 시간 (최우선 보호)
   const protectedItem = document.querySelector(".current-nearest");
+
+  /* 🔁 이미 선택된 입구 → 토글 OFF */
   if(activeEntries.has(corner)){
-    document.querySelectorAll("#c"+corner+" .entry-highlight").forEach(e => e.classList.remove("entry-highlight"));
+    document.querySelectorAll("#c"+corner+" .entry-highlight")
+      .forEach(e => e.classList.remove("entry-highlight"));
     activeEntries.delete(corner);
     return;
   }
+
+  /* ➕ 새 입구 ON */
   activeEntries.add(corner);
+
   const now = Date.now();
+
   const list = [...document.querySelectorAll("#c"+corner+" .time")]
     .filter(el => el !== protectedItem)
-    .map(el => ({ el, diff: Math.abs(now - parseInt(el.dataset.time)) }))
-    .sort((a,b)=>a.diff-b.diff).slice(0,3);
-  list.forEach(o => { o.el.classList.add("entry-highlight"); });
+    .map(el => ({
+      el,
+      diff: Math.abs(now - parseInt(el.dataset.time))
+    }))
+    .sort((a,b)=>a.diff-b.diff)
+    .slice(0,3);
+
+  list.forEach(o => {
+    o.el.classList.add("entry-highlight");
+  });
 }
 
-/* 알람 및 진동 로직 */
-let alarmEnabled = false;
-let lastAlarmMinute = -1;
+// ✅ 알람 관련 스크립트
+let isAlarmEnabled = false;
+let lastAlarmTime = "";
 
-function setAlarmState(state) {
-  alarmEnabled = state;
-  document.getElementById("alarmOnBtn").classList.toggle("active", state);
-  if(state) {
-    if (navigator.vibrate) navigator.vibrate(200); 
-  } else {
-    stopVibration();
+function toggleAlarm(status) {
+  isAlarmEnabled = status;
+  document.getElementById('alarmOn').classList.toggle('active', status);
+  document.getElementById('alarmOff').classList.toggle('active', !status);
+  if(status) {
+    if (navigator.vibrate) navigator.vibrate(200);
   }
 }
 
-function checkAlarm(now) {
-  if (!alarmEnabled) return;
-  const h = now.getHours();
-  const m = now.getMinutes();
-  if (h >= 10 && h < 18 && m !== lastAlarmMinute) {
-    triggerAlarm();
-    lastAlarmMinute = m;
-  }
-}
+function checkAlarm() {
+  if (!isAlarmEnabled) return;
 
-function triggerAlarm() {
-  if (navigator.vibrate) navigator.vibrate(5000); // 5초 진동
-  document.getElementById("stopVibeBtn").style.display = "block";
-  document.body.style.background = "#ffcdd2";
-  setTimeout(() => {
-    if(document.body.style.background !== "rgb(249, 249, 249)") {
-      document.body.style.background = "#f9f9f9";
+  const now = new Date();
+  const currentTimeStr = now.getHours() + ":" + now.getMinutes();
+  
+  // 알람 범위: 10:00 ~ 18:00
+  if (now.getHours() >= 10 && now.getHours() < 18) {
+    if (lastAlarmTime !== currentTimeStr) {
+      if (navigator.vibrate) navigator.vibrate(5000);
+      lastAlarmTime = currentTimeStr;
     }
-  }, 5000);
-}
-
-function stopVibration() {
-  if (navigator.vibrate) navigator.vibrate(0);
-  document.getElementById("stopVibeBtn").style.display = "none";
-  document.body.style.background = "#f9f9f9";
+  }
 }
 </script>
+
 </body>
 </html>
