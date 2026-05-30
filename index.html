@@ -5,13 +5,10 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="타임테이블">
 <link rel="apple-touch-icon" href="icon-192.png">
-
 <link rel="manifest" href="manifest.json">
 <meta charset="UTF-8">
 <title>타임테이블</title>
-
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="apple-mobile-web-app-capable" content="yes">
 
 <style>
 body{
@@ -22,7 +19,6 @@ body{
   transition: background 0.3s;
 }
 
-/* 제목 */
 .title{
   display:flex;
   justify-content:center;
@@ -30,17 +26,9 @@ body{
   gap:10px;
   margin-bottom:6px;
 }
-.title h2{
-  margin:0;
-  font-size:18px;
-}
-#nowTime{
-  font-size:26px;
-  font-weight:900;
-  color:#d32f2f;
-}
+.title h2{ margin:0; font-size:18px; }
+#nowTime{ font-size:26px; font-weight:900; color:#d32f2f; }
 
-/* 입력 영역 */
 .controls{
   text-align:center;
   margin-bottom:6px;
@@ -54,7 +42,6 @@ body{
   text-align:center;
 }
 
-/* 전체 영역 */
 #container{
   position:relative;
   width:260px;
@@ -75,7 +62,6 @@ body{
   box-sizing:border-box;
 }
 
-/* 시간 표시 공통 */
 .time{
   background:#e3f2fd;
   border-radius:10px;
@@ -85,7 +71,6 @@ body{
   white-space:nowrap;
 }
 
-/* 🔥 정렬 핵심 (완전 고정) */
 .top-left,
 .bottom-left{
   display:flex;
@@ -109,40 +94,64 @@ body{
   justify-content: flex-end;
 }
 
-/* 입구 버튼 */
+/* 코너 버튼 영역: 메인 버튼 + 시작 버튼을 같이 묶는 wrapper */
+.corner-wrap {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  gap: 3px;
+}
+
+/* 위치 */
+.corner-wrap.tl { top:0; left:0; transform: translate(-50%, -50%); flex-direction: row-reverse; }
+.corner-wrap.tr { top:0; right:0; transform: translate(50%, -50%); flex-direction: row; }
+.corner-wrap.br { bottom:0; right:0; transform: translate(50%, 50%); flex-direction: row; }
+.corner-wrap.bl { bottom:0; left:0; transform: translate(-50%, 50%); flex-direction: row-reverse; }
+
 .corner-btn{
-  position:absolute;
   font-size:12px;
   padding:4px 8px;
   border-radius:6px;
   border:2px solid #3f51b5;
   background:#fff;
-}
-.btn-tl{top:0;left:0;transform:translate(-60%,-60%)}
-.btn-tr{top:0;right:0;transform:translate(60%,-60%)}
-.btn-bl{bottom:0;left:0;transform:translate(-60%,60%)}
-.btn-br{bottom:0;right:0;transform:translate(60%,60%)}
-
-/* 지나간 시간 */
-.expired {
-  color: #999;
-  background: #eee;
-  text-decoration: line-through;
+  cursor:pointer;
+  white-space:nowrap;
+  min-width: 36px;
 }
 
-/* 현재 시간과 가장 가까운 과거 시간 */
-.current-nearest {
-  background: #ffeb3b;
-  font-weight: bold;
+/* 시작 버튼 */
+.start-btn {
+  font-size:11px;
+  padding:3px 6px;
+  border-radius:5px;
+  border:1px solid #888;
+  background:#f0f0f0;
+  cursor:pointer;
+  white-space:nowrap;
+  min-width: 28px;
+  color: #555;
+}
+.start-btn:hover {
+  background: #ddd;
 }
 
-/* 입구 버튼으로 강조된 시간 */
-.entry-highlight {
-  background: #c8e6c9;
-  font-weight: bold;
+/* 요일 표시 상태 */
+.corner-btn.day-thu { background: #e8eaf6; border-color: #3f51b5; color: #1a237e; font-weight: bold; }
+.corner-btn.day-fri { background: #e8eaf6; border-color: #3f51b5; color: #1a237e; font-weight: bold; }
+.corner-btn.day-sat { background: #e91e63; border-color: #880e4f; color: #fff; font-weight: bold; }
+.corner-btn.day-sun { background: #f44336; border-color: #b71c1c; color: #fff; font-weight: bold; }
+
+/* 시작 버튼 - 활성화된 코너 */
+.start-btn.active-start {
+  background: #3f51b5;
+  color: white;
+  border-color: #3f51b5;
 }
 
-/* 알람 제어 영역 */
+.expired { color: #999; background: #eee; text-decoration: line-through; }
+.current-nearest { background: #ffeb3b; font-weight: bold; }
+.entry-highlight { background: #c8e6c9; font-weight: bold; }
+
 .alarm-controls {
   margin-top: 50px;
   text-align: center;
@@ -171,7 +180,7 @@ body{
 </div>
 
 <div class="controls">
-  <input id="startTime" placeholder="0800" maxlength="4">
+  <input id="startTime" placeholder="1000" maxlength="4">
   <select id="startCorner">
     <option value="0">좌상</option>
     <option value="1">우상</option>
@@ -181,17 +190,36 @@ body{
 </div>
 
 <div id="container">
- <div id="square">
-  <div class="top-left" id="c0"></div>
-  <div class="top-right" id="c1"></div>
-  <div class="bottom-left" id="c3"></div>
-  <div class="bottom-right" id="c2"></div>
-</div>
+  <div id="square">
+    <div class="top-left" id="c0"></div>
+    <div class="top-right" id="c1"></div>
+    <div class="bottom-left" id="c3"></div>
+    <div class="bottom-right" id="c2"></div>
+  </div>
 
-<button class="corner-btn btn-tl" onclick="highlightEntry(0)">메인</button>
-<button class="corner-btn btn-tr" onclick="highlightEntry(1)">메인</button>
-<button class="corner-btn btn-br" onclick="highlightEntry(2)">메인</button>
-<button class="corner-btn btn-bl" onclick="highlightEntry(3)">메인</button>
+  <!-- 좌상 (corner 0) -->
+  <div class="corner-wrap tl">
+    <button class="corner-btn" id="mainBtn0" onclick="highlightEntry(0)">메인</button>
+    <button class="start-btn" id="startBtn0" onclick="activateDayStart(0)">시작</button>
+  </div>
+
+  <!-- 우상 (corner 1) -->
+  <div class="corner-wrap tr">
+    <button class="corner-btn" id="mainBtn1" onclick="highlightEntry(1)">메인</button>
+    <button class="start-btn" id="startBtn1" onclick="activateDayStart(1)">시작</button>
+  </div>
+
+  <!-- 우하 (corner 2) -->
+  <div class="corner-wrap br">
+    <button class="corner-btn" id="mainBtn2" onclick="highlightEntry(2)">메인</button>
+    <button class="start-btn" id="startBtn2" onclick="activateDayStart(2)">시작</button>
+  </div>
+
+  <!-- 좌하 (corner 3) -->
+  <div class="corner-wrap bl">
+    <button class="corner-btn" id="mainBtn3" onclick="highlightEntry(3)">메인</button>
+    <button class="start-btn" id="startBtn3" onclick="activateDayStart(3)">시작</button>
+  </div>
 </div>
 
 <div class="alarm-controls">
@@ -200,7 +228,18 @@ body{
 </div>
 
 <script>
-let activeEntries = new Set(); 
+// ── 상태 ──────────────────────────────────────────
+let activeEntries = new Set();
+
+// 시계방향 순서: 0=좌상, 1=우상, 2=우하, 3=좌하
+const CW = [0, 1, 2, 3]; // 시계방향 코너 인덱스 순서
+
+// 요일 배열
+const DAYS = ['목', '금', '토', '일'];
+const DAY_CLASSES = ['day-thu', 'day-fri', 'day-sat', 'day-sun'];
+
+// dayStartCorner: 몇 번 코너가 '목'인지 (-1이면 비활성)
+let dayStartCorner = -1;
 
 const order = [
   [0,1,2,3],
@@ -212,10 +251,68 @@ const order = [
 const input = document.getElementById("startTime");
 const select = document.getElementById("startCorner");
 
+// ── localStorage 로드 ──────────────────────────────
+function loadState() {
+  const saved = localStorage.getItem('timetable_state');
+  if (saved) {
+    try {
+      const s = JSON.parse(saved);
+      if (s.startTime !== undefined) input.value = s.startTime;
+      if (s.startCorner !== undefined) select.value = s.startCorner;
+      if (s.dayStartCorner !== undefined) dayStartCorner = s.dayStartCorner;
+    } catch(e) {}
+  }
+  // 기본값
+  if (!input.value) input.value = '1000';
+}
+
+function saveState() {
+  localStorage.setItem('timetable_state', JSON.stringify({
+    startTime: input.value,
+    startCorner: select.value,
+    dayStartCorner: dayStartCorner
+  }));
+}
+
+// ── 요일 버튼 렌더 ────────────────────────────────
+function renderDayButtons() {
+  for (let i = 0; i < 4; i++) {
+    const btn = document.getElementById('mainBtn' + i);
+    const sBtn = document.getElementById('startBtn' + i);
+
+    // 기존 day 클래스 제거
+    DAY_CLASSES.forEach(c => btn.classList.remove(c));
+    sBtn.classList.remove('active-start');
+
+    if (dayStartCorner === -1) {
+      btn.textContent = '메인';
+    } else {
+      // 이 코너가 시계방향 순서에서 dayStartCorner로부터 몇 번째?
+      const cwPos = CW.indexOf(i);
+      const startPos = CW.indexOf(dayStartCorner);
+      const offset = (cwPos - startPos + 4) % 4;
+
+      btn.textContent = DAYS[offset];
+      btn.classList.add(DAY_CLASSES[offset]);
+
+      if (i === dayStartCorner) {
+        sBtn.classList.add('active-start');
+      }
+    }
+  }
+}
+
+// 시작 버튼 클릭
+function activateDayStart(corner) {
+  dayStartCorner = corner;
+  renderDayButtons();
+  saveState();
+}
+
+// ── 타임테이블 그리기 ──────────────────────────────
 function draw(){
   const v = input.value;
   if(v.length!==4) return;
-
   const h=parseInt(v.slice(0,2));
   const m=parseInt(v.slice(2,4));
   if(h>23||m>59) return;
@@ -238,11 +335,13 @@ function draw(){
     t=new Date(t.getTime()+40*60000);
     i++;
   }
+  saveState();
 }
 
-input.addEventListener("input",draw);
-select.addEventListener("change",draw);
+input.addEventListener("input", draw);
+select.addEventListener("change", draw);
 
+// ── 현재 시간 ────────────────────────────────────
 function updateNow(){
   const n=new Date();
   document.getElementById("nowTime").innerText=
@@ -253,39 +352,32 @@ function updateNow(){
 setInterval(updateNow,1000);
 updateNow();
 
+// ── 시간 상태 업데이트 ────────────────────────────
 function updateTimeStatus(){
   const now = Date.now();
   const times = document.querySelectorAll(".time");
-
   let nearestPast = null;
   let nearestDiff = Infinity;
 
   times.forEach(el => {
     const t = parseInt(el.dataset.time);
-
     el.classList.remove("expired", "current-nearest");
-
     if(t < now){
       el.classList.add("expired");
-
       const diff = now - t;
-      if(diff < nearestDiff){
-        nearestDiff = diff;
-        nearestPast = el;
-      }
+      if(diff < nearestDiff){ nearestDiff = diff; nearestPast = el; }
     }
   });
 
   if(nearestPast){
-  nearestPast.classList.remove("expired"); 
-  nearestPast.classList.add("current-nearest");
+    nearestPast.classList.remove("expired");
+    nearestPast.classList.add("current-nearest");
   }
-
   checkAlarm();
 }
-
 setInterval(updateTimeStatus, 1000);
 
+// ── 입구 하이라이트 ──────────────────────────────
 function highlightEntry(corner){
   const protectedItem = document.querySelector(".current-nearest");
   if(activeEntries.has(corner)){
@@ -298,20 +390,15 @@ function highlightEntry(corner){
   const now = Date.now();
   const list = [...document.querySelectorAll("#c"+corner+" .time")]
     .filter(el => el !== protectedItem)
-    .map(el => ({
-      el,
-      diff: Math.abs(now - parseInt(el.dataset.time))
-    }))
+    .map(el => ({ el, diff: Math.abs(now - parseInt(el.dataset.time)) }))
     .sort((a,b)=>a.diff-b.diff)
     .slice(0,3);
-
-  list.forEach(o => {
-    o.el.classList.add("entry-highlight");
-  });
+  list.forEach(o => o.el.classList.add("entry-highlight"));
 }
 
+// ── 알람 ─────────────────────────────────────────
 let isAlarmEnabled = false;
-let lastAlarmMinuteMark = -1; // 마지막으로 알람이 울린 분 저장
+let lastAlarmMinuteMark = -1;
 const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
 function playBeep(count) {
@@ -325,33 +412,26 @@ function playBeep(count) {
   gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
   osc.start();
   osc.stop(audioCtx.currentTime + 0.5);
-  
-  osc.onended = () => {
-    setTimeout(() => playBeep(count - 1), 500);
-  };
+  osc.onended = () => { setTimeout(() => playBeep(count - 1), 500); };
 }
 
 function triggerAlarmEffects() {
   if (navigator.vibrate) navigator.vibrate(5000);
   playBeep(3);
-
   document.body.style.backgroundColor = "#ffcdd2";
   setTimeout(() => {
     if (document.body.style.backgroundColor === "rgb(255, 205, 210)") {
       document.body.style.backgroundColor = "#f9f9f9";
     }
-  }, 180000); // 3분 유지
+  }, 180000);
 }
 
 function toggleAlarm(status) {
   isAlarmEnabled = status;
   document.getElementById('alarmOn').classList.toggle('active', status);
   document.getElementById('alarmOff').classList.toggle('active', !status);
-  
   if(status) {
     if (audioCtx.state === 'suspended') audioCtx.resume();
-    // 켜는 즉시 테스트를 원하시면 아래 주석을 해제하세요.
-    // triggerAlarmEffects();
   } else {
     document.body.style.backgroundColor = "#f9f9f9";
   }
@@ -359,12 +439,9 @@ function toggleAlarm(status) {
 
 function checkAlarm() {
   if (!isAlarmEnabled) return;
-
   const now = new Date();
   const h = now.getHours();
   const m = now.getMinutes();
-
-  // ✅ 조건: 10시부터 18시(오후 6시)까지, 20분 간격 (0분, 20분, 40분)
   if (h >= 10 && h < 18) {
     if (m % 20 === 0 && m !== lastAlarmMinuteMark) {
       triggerAlarmEffects();
@@ -372,6 +449,11 @@ function checkAlarm() {
     }
   }
 }
+
+// ── 초기화 ───────────────────────────────────────
+loadState();
+draw();
+renderDayButtons();
 </script>
 
 </body>
