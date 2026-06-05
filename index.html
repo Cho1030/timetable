@@ -1,21 +1,23 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="ko">
 <head>
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="타임테이블">
+<meta name="apple-mobile-web-app-title" content="&#53440;&#51076;&#53580;&#51060;&#48660;">
 <link rel="apple-touch-icon" href="icon-192.png">
 <link rel="manifest" href="manifest.json">
 <meta charset="UTF-8">
-<title>타임테이블</title>
+<title>&#53440;&#51076;&#53580;&#51060;&#48660;</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
 body{
   margin:0;
-  padding:10px;
+  padding:18px 14px 22px;
   font-family: Arial, sans-serif;
-  background:#f9f9f9;
+  background:
+    radial-gradient(circle at top, #ffffff 0%, #eef4ff 42%, #e3ecfb 100%);
+  color:#20304a;
   transition: background 0.3s;
 }
 
@@ -23,52 +25,136 @@ body{
   display:flex;
   justify-content:center;
   align-items:baseline;
-  gap:10px;
-  margin-bottom:6px;
+  gap:12px;
+  margin-bottom:12px;
 }
-.title h2{ margin:0; font-size:18px; }
-#nowTime{ font-size:26px; font-weight:900; color:#d32f2f; }
+.title h2{
+  margin:0;
+  font-size:16px;
+  font-weight:800;
+  letter-spacing:0.08em;
+  color:#4e6487;
+}
+#nowTime{
+  font-size:30px;
+  font-weight:900;
+  color:#d32f2f;
+  font-variant-numeric: tabular-nums;
+  text-shadow:0 1px 0 rgba(255,255,255,0.65);
+}
 
 .controls{
+  display:flex;
+  flex-wrap:wrap;
+  justify-content:center;
+  align-items:center;
+  gap:8px;
   text-align:center;
-  margin-bottom:6px;
+  margin:0 auto 18px;
+  padding:12px;
+  width:max-content;
+  max-width:calc(100% - 16px);
+  background:rgba(255,255,255,0.82);
+  border:1px solid rgba(126,150,190,0.28);
+  border-radius:18px;
+  box-shadow:0 10px 28px rgba(65,88,140,0.12);
+  backdrop-filter:blur(10px);
+  box-sizing:border-box;
 }
 .controls input,
-.controls select{
+.controls select,
+.controls button{
   font-size:14px;
-  padding:4px;
-  width:70px;
-  margin:2px;
+  padding:7px 10px;
+  margin:0;
   text-align:center;
+}
+
+.controls input,
+.controls select{
+  width:88px;
+  border:1px solid #bfd0ee;
+  border-radius:12px;
+  background:#f8fbff;
+  color:#294163;
+  box-shadow:inset 0 1px 2px rgba(33,50,89,0.06);
+}
+
+.controls button{
+  border:1px solid #b8c7e8;
+  border-radius:12px;
+  background:linear-gradient(180deg, #ffffff 0%, #edf3ff 100%);
+  color:#294163;
+  cursor:pointer;
+  white-space:nowrap;
+  box-shadow:0 2px 6px rgba(63,81,181,0.10);
+  transition:transform 0.16s ease, box-shadow 0.16s ease, background 0.16s ease;
+}
+
+.controls button:hover,
+.corner-btn:hover,
+.start-btn:hover,
+.alarm-btn:hover{
+  transform:translateY(-1px);
+  box-shadow:0 4px 10px rgba(63,81,181,0.14);
+}
+
+.controls button:active,
+.corner-btn:active,
+.start-btn:active,
+.alarm-btn:active{
+  transform:translateY(0);
+}
+
+.rotate-btn{
+  width:42px;
+  height:42px;
+  padding:0;
+  border-radius:50%;
+  font-size:20px;
+  font-weight:700;
+  line-height:1;
 }
 
 #container{
   position:relative;
-  width:260px;
-  height:260px;
-  margin:0 auto;
+  width:446px;
+  height:405px;
+  margin:0 auto 18px;
+  filter:drop-shadow(0 18px 30px rgba(44,62,107,0.16));
 }
 
 #square{
   position:absolute;
-  top:20px;
-  left:20px;
-  width:220px;
-  height:220px;
-  border:3px solid #3f51b5;
+  top:72px;
+  left:74px;
+  width:298px;
+  height:261px;
+  border:2px solid #7a96c7;
+  border-radius:0;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.97) 0%, rgba(241,246,255,0.96) 100%);
   display:grid;
   grid-template-columns:1fr 1fr;
   grid-template-rows:1fr 1fr;
   box-sizing:border-box;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.9),
+    0 10px 24px rgba(59,88,145,0.14);
+  transition:width 0.2s ease, height 0.2s ease, top 0.2s ease, left 0.2s ease;
 }
 
 .time{
-  background:#e3f2fd;
-  border-radius:10px;
-  padding:3px 8px;
-  margin:2px 0;
+  background:linear-gradient(180deg, #f8fbff 0%, #e8f1ff 100%);
+  border:1px solid #d5e3fb;
+  border-radius:12px;
+  padding:4px 8px;
+  margin:4px 0;
   font-size:13px;
   white-space:nowrap;
+  color:#2a4467;
+  box-shadow:0 2px 6px rgba(85,114,175,0.08);
+  transition:background 0.18s ease, color 0.18s ease, transform 0.18s ease;
 }
 
 .top-left,
@@ -76,7 +162,7 @@ body{
   display:flex;
   flex-direction:column;
   align-items:flex-start;
-  padding-left:4px;
+  padding-left:8px;
   text-align:left;
 }
 
@@ -85,89 +171,245 @@ body{
   display:flex;
   flex-direction:column;
   align-items:flex-end;
-  padding-right:4px;
+  padding-right:8px;
   text-align:right;
 }
 
 .bottom-left,
 .bottom-right{
   justify-content: flex-end;
+  padding-bottom:6px;
 }
 
-/* 코너 버튼 영역: 메인 버튼 + 시작 버튼을 같이 묶는 wrapper */
 .corner-wrap {
   position: absolute;
   display: flex;
   align-items: center;
-  gap: 3px;
+  gap: 6px;
 }
 
-/* 위치 */
-.corner-wrap.tl { top:0; left:0; transform: translate(-50%, -50%); flex-direction: row-reverse; }
-.corner-wrap.tr { top:0; right:0; transform: translate(50%, -50%); flex-direction: row; }
-.corner-wrap.br { bottom:0; right:0; transform: translate(50%, 50%); flex-direction: row; }
-.corner-wrap.bl { bottom:0; left:0; transform: translate(-50%, 50%); flex-direction: row-reverse; }
+.corner-wrap.tl { top:28px; left:22px; flex-direction: row-reverse; }
+.corner-wrap.tr { top:28px; right:22px; flex-direction: row; }
+.corner-wrap.br { bottom:28px; right:22px; flex-direction: row; }
+.corner-wrap.bl { bottom:28px; left:22px; flex-direction: row-reverse; }
 
 .corner-btn{
   font-size:12px;
-  padding:4px 8px;
-  border-radius:6px;
-  border:2px solid #3f51b5;
-  background:#fff;
+  padding:6px 10px;
+  border-radius:999px;
+  border:1px solid #bfd0ee;
+  background:rgba(255,255,255,0.96);
   cursor:pointer;
   white-space:nowrap;
-  min-width: 36px;
+  min-width: 48px;
+  color:#294163;
+  font-weight:700;
+  box-shadow:0 3px 8px rgba(51,81,140,0.10);
+  transition:transform 0.16s ease, box-shadow 0.16s ease, background 0.16s ease;
 }
 
-/* 시작 버튼 */
 .start-btn {
   font-size:11px;
-  padding:3px 6px;
-  border-radius:5px;
-  border:1px solid #888;
-  background:#f0f0f0;
+  padding:6px 8px;
+  border-radius:999px;
+  border:1px solid #cfd7e6;
+  background:#f8faff;
   cursor:pointer;
   white-space:nowrap;
-  min-width: 28px;
-  color: #555;
-}
-.start-btn:hover {
-  background: #ddd;
+  min-width: 38px;
+  color: #5a6981;
+  font-weight:700;
+  box-shadow:0 2px 6px rgba(51,81,140,0.08);
+  transition:transform 0.16s ease, box-shadow 0.16s ease, background 0.16s ease;
 }
 
-/* 요일 표시 상태 */
-.corner-btn.day-thu { background: #e8eaf6; border-color: #3f51b5; color: #1a237e; font-weight: bold; }
-.corner-btn.day-fri { background: #e8eaf6; border-color: #3f51b5; color: #1a237e; font-weight: bold; }
-.corner-btn.day-sat { background: #e91e63; border-color: #880e4f; color: #fff; font-weight: bold; }
-.corner-btn.day-sun { background: #f44336; border-color: #b71c1c; color: #fff; font-weight: bold; }
+.corner-btn.day-thu { background:linear-gradient(180deg, #f4f7ff 0%, #dee8ff 100%); border-color:#94ace4; color:#294a8f; }
+.corner-btn.day-fri { background:linear-gradient(180deg, #eef6ff 0%, #d8ecff 100%); border-color:#97bce3; color:#1f597f; }
+.corner-btn.day-sat { background:linear-gradient(180deg, #ffeff5 0%, #ffcfe0 100%); border-color:#e98bad; color:#922d56; }
+.corner-btn.day-sun { background:linear-gradient(180deg, #fff0ed 0%, #ffd6cf 100%); border-color:#eea092; color:#9b3527; }
 
-/* 시작 버튼 - 활성화된 코너 */
 .start-btn.active-start {
-  background: #3f51b5;
+  background:linear-gradient(180deg, #3559c7 0%, #2748a8 100%);
   color: white;
-  border-color: #3f51b5;
+  border-color: #2748a8;
+  box-shadow:0 4px 10px rgba(49,82,184,0.20);
 }
 
-.expired { color: #999; background: #eee; text-decoration: line-through; }
-.current-nearest { background: #ffeb3b; font-weight: bold; }
-.entry-highlight { background: #c8e6c9; font-weight: bold; }
+.expired { color: #95a0af; background:linear-gradient(180deg, #f0f3f8 0%, #e8ecf2 100%); border-color:#dee4ec; text-decoration: line-through; }
+.current-nearest { background:linear-gradient(180deg, #fff7cf 0%, #ffe88b 100%); border-color:#f0d061; font-weight: bold; color:#6e5500; transform:scale(1.03); }
+.entry-highlight { background:linear-gradient(180deg, #e8fbef 0%, #cbf0d9 100%); border-color:#97d0ad; font-weight: bold; color:#24543a; }
 
 .alarm-controls {
-  margin-top: 50px;
+  margin-top: 18px;
   text-align: center;
 }
-.alarm-btn {
-  font-size: 14px;
-  padding: 8px 12px;
-  margin: 5px;
-  border-radius: 6px;
-  border: 2px solid #3f51b5;
-  background: #fff;
-  cursor: pointer;
+.alarm-toggle{
+  position:relative;
+  width:230px;
+  height:58px;
+  border:none;
+  padding:0;
+  background:none;
+  cursor:pointer;
 }
-.alarm-btn.active {
-  background: #3f51b5;
-  color: white;
+.alarm-toggle-track{
+  display:block;
+  position:relative;
+  width:100%;
+  height:100%;
+  border-radius:999px;
+  border:2px solid #6f8fc8;
+  background:linear-gradient(180deg, #ffffff 0%, #edf4ff 100%);
+  box-shadow:none;
+  box-sizing:border-box;
+  overflow:hidden;
+}
+.alarm-toggle-label{
+  position:absolute;
+  top:50%;
+  transform:translateY(-50%);
+  font-size:18px;
+  font-weight:400;
+  line-height:1;
+  letter-spacing:0.02em;
+  color:#2f4f93;
+  opacity:0;
+  transition:opacity 0.2s ease;
+  white-space:nowrap;
+}
+.alarm-toggle-off{
+  right:18px;
+}
+.alarm-toggle-on{
+  left:18px;
+}
+.alarm-toggle-knob{
+  position:absolute;
+  top:8px;
+  left:10px;
+  width:42px;
+  height:42px;
+  border-radius:50%;
+  background:linear-gradient(180deg, #a8b0bf 0%, #7b8697 100%);
+  box-shadow:none;
+  transition:left 0.22s ease, background 0.22s ease;
+}
+.alarm-toggle.active .alarm-toggle-knob{
+  left:176px;
+  background:linear-gradient(180deg, #ff6b6b 0%, #d32f2f 100%);
+}
+.alarm-toggle.active .alarm-toggle-on{
+  opacity:1;
+}
+.alarm-toggle:not(.active) .alarm-toggle-off{
+  opacity:1;
+}
+
+@media (max-width: 420px) {
+  body{
+    padding:8px;
+  }
+
+  .title{
+    gap:6px;
+    margin-bottom:8px;
+  }
+
+  .title h2{
+    font-size:16px;
+  }
+
+  #nowTime{
+    font-size:22px;
+  }
+
+  .controls{
+    gap:6px;
+    margin-bottom:12px;
+    padding:10px;
+    width:max-content;
+    max-width:calc(100% - 8px);
+  }
+
+  .controls input,
+  .controls select,
+  .controls button{
+    font-size:13px;
+    padding:4px 6px;
+  }
+
+  .controls input,
+  .controls select{
+    width:74px;
+  }
+
+  .rotate-btn{
+    width:38px;
+    height:38px;
+    font-size:18px;
+  }
+
+  #container{
+    width:min(100%, 304px);
+    height:364px;
+  }
+
+  #square{
+    top:60px;
+    left:15px;
+    width:274px;
+    height:242px;
+  }
+
+  .corner-wrap.tl { top:24px; left:14px; }
+  .corner-wrap.tr { top:24px; right:14px; }
+  .corner-wrap.br { bottom:24px; right:14px; }
+  .corner-wrap.bl { bottom:24px; left:14px; }
+
+  .corner-btn{
+    font-size:11px;
+    min-width:40px;
+    padding:4px 8px;
+  }
+
+  .start-btn{
+    font-size:10px;
+    min-width:30px;
+    padding:4px 6px;
+  }
+
+  .time{
+    font-size:12px;
+    padding:3px 6px;
+  }
+
+  .alarm-toggle{
+    width:200px;
+    height:51px;
+  }
+
+  .alarm-toggle-label{
+    font-size:15px;
+  }
+
+  .alarm-toggle-off{
+    right:16px;
+  }
+
+  .alarm-toggle-on{
+    left:16px;
+  }
+
+  .alarm-toggle-knob{
+    top:8px;
+    left:9px;
+    width:36px;
+    height:36px;
+  }
+
+  .alarm-toggle.active .alarm-toggle-knob{
+    left:153px;
+  }
 }
 </style>
 </head>
@@ -175,18 +417,21 @@ body{
 <body>
 
 <div class="title">
-  <h2>📋 타임테이블</h2>
+  <h2>&#53440;&#51076;&#53580;&#51060;&#48660;</h2>
   <span id="nowTime">--:--:--</span>
 </div>
 
 <div class="controls">
-  <input id="startTime" placeholder="1000" maxlength="4">
+  <input id="startTime" placeholder="10:00" maxlength="5" inputmode="numeric">
   <select id="startCorner">
-    <option value="0">좌상</option>
-    <option value="1">우상</option>
-    <option value="2">우하</option>
-    <option value="3">좌하</option>
+    <option value="0">&#51340;&#49345;</option>
+    <option value="1">&#50864;&#49345;</option>
+    <option value="2">&#50864;&#54616;</option>
+    <option value="3">&#51340;&#54616;</option>
   </select>
+  <button type="button" onclick="realignTimeToToday()">&#49884;&#44036; &#51116;&#48176;&#52824;</button>
+  <button type="button" class="rotate-btn" onclick="rotateDayPattern(-1)">&#8634;</button>
+  <button type="button" class="rotate-btn" onclick="rotateDayPattern(1)">&#8635;</button>
 </div>
 
 <div id="container">
@@ -197,55 +442,70 @@ body{
     <div class="bottom-right" id="c2"></div>
   </div>
 
-  <!-- 좌상 (corner 0) -->
   <div class="corner-wrap tl">
-    <button class="corner-btn" id="mainBtn0" onclick="highlightEntry(0)">메인</button>
-    <button class="start-btn" id="startBtn0" onclick="activateDayStart(0)">시작</button>
+    <button class="corner-btn" id="mainBtn0" onclick="highlightEntry(0)">&#47700;&#51064;</button>
+    <button class="start-btn" id="startBtn0" onclick="activateDayStart(0)">&#49884;&#51089;</button>
   </div>
 
-  <!-- 우상 (corner 1) -->
   <div class="corner-wrap tr">
-    <button class="corner-btn" id="mainBtn1" onclick="highlightEntry(1)">메인</button>
-    <button class="start-btn" id="startBtn1" onclick="activateDayStart(1)">시작</button>
+    <button class="corner-btn" id="mainBtn1" onclick="highlightEntry(1)">&#47700;&#51064;</button>
+    <button class="start-btn" id="startBtn1" onclick="activateDayStart(1)">&#49884;&#51089;</button>
   </div>
 
-  <!-- 우하 (corner 2) -->
   <div class="corner-wrap br">
-    <button class="corner-btn" id="mainBtn2" onclick="highlightEntry(2)">메인</button>
-    <button class="start-btn" id="startBtn2" onclick="activateDayStart(2)">시작</button>
+    <button class="corner-btn" id="mainBtn2" onclick="highlightEntry(2)">&#47700;&#51064;</button>
+    <button class="start-btn" id="startBtn2" onclick="activateDayStart(2)">&#49884;&#51089;</button>
   </div>
 
-  <!-- 좌하 (corner 3) -->
   <div class="corner-wrap bl">
-    <button class="corner-btn" id="mainBtn3" onclick="highlightEntry(3)">메인</button>
-    <button class="start-btn" id="startBtn3" onclick="activateDayStart(3)">시작</button>
+    <button class="corner-btn" id="mainBtn3" onclick="highlightEntry(3)">&#47700;&#51064;</button>
+    <button class="start-btn" id="startBtn3" onclick="activateDayStart(3)">&#49884;&#51089;</button>
   </div>
 </div>
 
 <div class="alarm-controls">
-  <button id="alarmOn" class="alarm-btn" onclick="toggleAlarm(true)">🔔 알람 시작</button>
-  <button id="alarmOff" class="alarm-btn active" onclick="toggleAlarm(false)">🔕 알람 종료</button>
+  <button id="alarmToggle" class="alarm-toggle" type="button" onclick="toggleAlarm()">
+    <span class="alarm-toggle-track">
+      <span class="alarm-toggle-label alarm-toggle-off">&#50508;&#46988; &#45124;&#44592;</span>
+      <span class="alarm-toggle-label alarm-toggle-on">&#50508;&#46988; &#53020;&#44592;</span>
+      <span class="alarm-toggle-knob" aria-hidden="true"></span>
+    </span>
+  </button>
 </div>
 
 <script>
-// ── 상태 ──────────────────────────────────────────
 let activeEntries = new Set();
 
-// 코너: 0=좌상, 1=우상, 2=우하, 3=좌하
-// 각 시작 코너별 목→금→토→일 순서
 const DAY_ORDER = {
-  0: [0, 3, 1, 2], // 좌상: 좌상→좌하→우상→우하
-  3: [3, 0, 2, 1], // 좌하: 좌하→좌상→우하→우상
-  1: [1, 2, 0, 3], // 우상: 우상→우하→좌상→좌하
-  2: [2, 1, 3, 0], // 우하: 우하→우상→좌하→좌상
+  0: [0, 3, 1, 2],
+  1: [1, 2, 0, 3],
+  2: [2, 1, 3, 0],
+  3: [3, 0, 2, 1]
 };
 
-// 요일 배열
-const DAYS = ['목', '금', '토', '일'];
+const DAYS = ['\uBAA9', '\uAE08', '\uD1A0', '\uC77C'];
 const DAY_CLASSES = ['day-thu', 'day-fri', 'day-sat', 'day-sun'];
+const CELL_IDS = ['c0', 'c1', 'c2', 'c3'];
+const ROTATION_MAPS = [
+  [0, 1, 2, 3],
+  [3, 0, 1, 2],
+  [2, 3, 0, 1],
+  [1, 2, 3, 0]
+];
+const GEOMETRY = {
+  desktop: {
+    landscape: { containerWidth: 446, containerHeight: 405, squareTop: 72, squareLeft: 74, squareWidth: 298, squareHeight: 261 },
+    portrait: { containerWidth: 405, containerHeight: 446, squareTop: 74, squareLeft: 72, squareWidth: 261, squareHeight: 298 }
+  },
+  mobile: {
+    landscape: { containerWidth: 304, containerHeight: 364, squareTop: 60, squareLeft: 15, squareWidth: 274, squareHeight: 242 },
+    portrait: { containerWidth: 332, containerHeight: 388, squareTop: 66, squareLeft: 40, squareWidth: 242, squareHeight: 274 }
+  }
+};
 
-// dayStartCorner: 몇 번 코너가 '목'인지 (-1이면 비활성)
 let dayStartCorner = -1;
+let timeStartCorner = 0;
+let rotationTurns = 0;
 
 const order = [
   [0,1,2,3],
@@ -256,72 +516,188 @@ const order = [
 
 const input = document.getElementById("startTime");
 const select = document.getElementById("startCorner");
+const container = document.getElementById("container");
+const square = document.getElementById("square");
 
-// ── localStorage 로드 ──────────────────────────────
+function normalizeTimeValue(raw) {
+  const digits = String(raw).replace(/\D/g, '').slice(0, 4);
+  if (digits.length <= 2) return digits;
+  return digits.slice(0, 2) + ':' + digits.slice(2);
+}
+
+function parseTimeValue(raw) {
+  const digits = String(raw).replace(/\D/g, '');
+  if (digits.length !== 4) return null;
+
+  const h = parseInt(digits.slice(0, 2), 10);
+  const m = parseInt(digits.slice(2, 4), 10);
+  if (Number.isNaN(h) || Number.isNaN(m) || h > 23 || m > 59) return null;
+
+  return { h, m };
+}
+
 function loadState() {
   const saved = localStorage.getItem('timetable_state');
   if (saved) {
     try {
       const s = JSON.parse(saved);
       if (s.startTime !== undefined) input.value = s.startTime;
-      if (s.startCorner !== undefined) select.value = s.startCorner;
+      if (s.timeStartCorner !== undefined) {
+        timeStartCorner = s.timeStartCorner;
+      } else if (s.startCorner !== undefined) {
+        timeStartCorner = Number(s.startCorner);
+      }
       if (s.dayStartCorner !== undefined) dayStartCorner = s.dayStartCorner;
+      if (s.rotationTurns !== undefined) rotationTurns = s.rotationTurns;
     } catch(e) {}
   }
-  // 기본값
-  if (!input.value) input.value = '1000';
+  input.value = normalizeTimeValue(input.value);
+  if (!input.value) input.value = '10:00';
 }
 
 function saveState() {
   localStorage.setItem('timetable_state', JSON.stringify({
     startTime: input.value,
-    startCorner: select.value,
-    dayStartCorner: dayStartCorner
+    startCorner: String(timeStartCorner),
+    timeStartCorner: timeStartCorner,
+    dayStartCorner: dayStartCorner,
+    rotationTurns: rotationTurns
   }));
 }
 
-// ── 요일 버튼 렌더 ────────────────────────────────
-function renderDayButtons() {
-  for (let i = 0; i < 4; i++) {
-    const btn = document.getElementById('mainBtn' + i);
-    const sBtn = document.getElementById('startBtn' + i);
+function getPhysicalToLogicalMap() {
+  return ROTATION_MAPS[rotationTurns];
+}
 
-    // 기존 day 클래스 제거
+function getLogicalToPhysicalMap() {
+  const physicalToLogical = getPhysicalToLogicalMap();
+  const logicalToPhysical = [];
+
+  physicalToLogical.forEach((logicalCorner, physicalCorner) => {
+    logicalToPhysical[logicalCorner] = physicalCorner;
+  });
+
+  return logicalToPhysical;
+}
+
+function getLogicalCornerFromPhysical(physicalCorner) {
+  return getPhysicalToLogicalMap()[physicalCorner];
+}
+
+function getPhysicalCornerFromLogical(logicalCorner) {
+  return getLogicalToPhysicalMap()[logicalCorner];
+}
+
+function syncStartCornerSelect() {
+  select.value = String(getPhysicalCornerFromLogical(timeStartCorner));
+}
+
+function applyGeometry() {
+  const isMobile = window.innerWidth <= 420;
+  const mode = rotationTurns % 2 === 0 ? 'landscape' : 'portrait';
+  const geometry = isMobile ? GEOMETRY.mobile[mode] : GEOMETRY.desktop[mode];
+
+  container.style.width = geometry.containerWidth + 'px';
+  container.style.height = geometry.containerHeight + 'px';
+  square.style.top = geometry.squareTop + 'px';
+  square.style.left = geometry.squareLeft + 'px';
+  square.style.width = geometry.squareWidth + 'px';
+  square.style.height = geometry.squareHeight + 'px';
+}
+
+function renderDayButtons() {
+  syncStartCornerSelect();
+  const physicalStartCorner = getPhysicalCornerFromLogical(timeStartCorner);
+  const physicalToLogical = getPhysicalToLogicalMap();
+
+  for (let physicalCorner = 0; physicalCorner < 4; physicalCorner++) {
+    const btn = document.getElementById('mainBtn' + physicalCorner);
+    const sBtn = document.getElementById('startBtn' + physicalCorner);
+    const logicalCorner = physicalToLogical[physicalCorner];
+
     DAY_CLASSES.forEach(c => btn.classList.remove(c));
     sBtn.classList.remove('active-start');
 
     if (dayStartCorner === -1) {
-      btn.textContent = '메인';
+      btn.textContent = '\uBA54\uC778';
     } else {
       const seq = DAY_ORDER[dayStartCorner];
-      const offset = seq.indexOf(i); // 0=목, 1=금, 2=토, 3=일
-
+      const offset = seq.indexOf(logicalCorner);
       btn.textContent = DAYS[offset];
       btn.classList.add(DAY_CLASSES[offset]);
+    }
 
-      if (i === dayStartCorner) {
-        sBtn.classList.add('active-start');
-      }
+    if (physicalCorner === physicalStartCorner) {
+      sBtn.classList.add('active-start');
     }
   }
 }
 
-// 시작 버튼 클릭
-function activateDayStart(corner) {
-  dayStartCorner = corner;
+function activateDayStart(physicalCorner) {
+  const logicalCorner = getLogicalCornerFromPhysical(physicalCorner);
+  timeStartCorner = logicalCorner;
+  dayStartCorner = logicalCorner;
+  draw();
   renderDayButtons();
   saveState();
 }
 
-// ── 타임테이블 그리기 ──────────────────────────────
+function rotateDayPattern(direction) {
+  const step = direction > 0 ? 1 : -1;
+  rotationTurns = (rotationTurns + step + 4) % 4;
+  applyGeometry();
+  draw();
+  renderDayButtons();
+  saveState();
+}
+
+function findDayStartCorner(dayOffset, targetCorner) {
+  for (let corner = 0; corner < 4; corner++) {
+    if (DAY_ORDER[corner][dayOffset] === targetCorner) {
+      return corner;
+    }
+  }
+  return -1;
+}
+
+function getTodayDayOffset() {
+  const day = new Date().getDay();
+  const dayMap = {
+    4: 0,
+    5: 1,
+    6: 2,
+    0: 3
+  };
+  return dayMap[day] ?? null;
+}
+
+function applyTodayStartCorner() {
+  const todayOffset = getTodayDayOffset();
+  if (todayOffset === null) return;
+
+  input.value = '10:00';
+
+  if (dayStartCorner === -1) {
+    dayStartCorner = 0;
+  }
+
+  timeStartCorner = DAY_ORDER[dayStartCorner][todayOffset];
+}
+
+function realignTimeToToday() {
+  applyTodayStartCorner();
+  draw();
+  renderDayButtons();
+  saveState();
+}
+
 function draw(){
-  const v = input.value;
-  if(v.length!==4) return;
-  const h=parseInt(v.slice(0,2));
-  const m=parseInt(v.slice(2,4));
-  if(h>23||m>59) return;
+  const parsedTime = parseTimeValue(input.value);
+  if(!parsedTime) return;
+  const { h, m } = parsedTime;
 
   document.querySelectorAll("#square > div").forEach(d=>d.innerHTML="");
+  const logicalToPhysical = getLogicalToPhysicalMap();
 
   let t=new Date();
   t.setHours(h,m,0,0);
@@ -335,17 +711,31 @@ function draw(){
     d.className="time";
     d.innerText=t.toTimeString().slice(0,5);
     d.dataset.time = t.getTime();
-    document.getElementById("c"+order[select.value][i%4]).appendChild(d);
+    const logicalCorner = order[timeStartCorner][i%4];
+    const physicalCorner = logicalToPhysical[logicalCorner];
+    document.getElementById(CELL_IDS[physicalCorner]).appendChild(d);
     t=new Date(t.getTime()+40*60000);
     i++;
   }
   saveState();
 }
 
-input.addEventListener("input", draw);
-select.addEventListener("change", draw);
+input.addEventListener("input", () => {
+  const normalized = normalizeTimeValue(input.value);
+  if (input.value !== normalized) {
+    input.value = normalized;
+  }
+  draw();
+  saveState();
+});
+select.addEventListener("change", () => {
+  timeStartCorner = getLogicalCornerFromPhysical(Number(select.value));
+  draw();
+  renderDayButtons();
+  saveState();
+});
 
-// ── 현재 시간 ────────────────────────────────────
+// ?? ?꾩옱 ?쒓컙 ????????????????????????????????????
 function updateNow(){
   const n=new Date();
   document.getElementById("nowTime").innerText=
@@ -356,7 +746,7 @@ function updateNow(){
 setInterval(updateNow,1000);
 updateNow();
 
-// ── 시간 상태 업데이트 ────────────────────────────
+// ?? ?쒓컙 ?곹깭 ?낅뜲?댄듃 ????????????????????????????
 function updateTimeStatus(){
   const now = Date.now();
   const times = document.querySelectorAll(".time");
@@ -381,7 +771,7 @@ function updateTimeStatus(){
 }
 setInterval(updateTimeStatus, 1000);
 
-// ── 입구 하이라이트 ──────────────────────────────
+// ?? ?낃뎄 ?섏씠?쇱씠????????????????????????????????
 function highlightEntry(corner){
   const protectedItem = document.querySelector(".current-nearest");
   if(activeEntries.has(corner)){
@@ -400,7 +790,7 @@ function highlightEntry(corner){
   list.forEach(o => o.el.classList.add("entry-highlight"));
 }
 
-// ── 알람 ─────────────────────────────────────────
+// ?? ?뚮엺 ?????????????????????????????????????????
 let isAlarmEnabled = false;
 let lastAlarmMinuteMark = -1;
 const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -425,19 +815,22 @@ function triggerAlarmEffects() {
   document.body.style.backgroundColor = "#ffcdd2";
   setTimeout(() => {
     if (document.body.style.backgroundColor === "rgb(255, 205, 210)") {
-      document.body.style.backgroundColor = "#f9f9f9";
+      document.body.style.backgroundColor = "";
     }
   }, 180000);
 }
 
-function toggleAlarm(status) {
-  isAlarmEnabled = status;
-  document.getElementById('alarmOn').classList.toggle('active', status);
-  document.getElementById('alarmOff').classList.toggle('active', !status);
-  if(status) {
+function updateAlarmToggleUI() {
+  document.getElementById('alarmToggle').classList.toggle('active', isAlarmEnabled);
+}
+
+function toggleAlarm(forceStatus) {
+  isAlarmEnabled = typeof forceStatus === 'boolean' ? forceStatus : !isAlarmEnabled;
+  updateAlarmToggleUI();
+  if(isAlarmEnabled) {
     if (audioCtx.state === 'suspended') audioCtx.resume();
   } else {
-    document.body.style.backgroundColor = "#f9f9f9";
+    document.body.style.backgroundColor = "";
   }
 }
 
@@ -454,10 +847,13 @@ function checkAlarm() {
   }
 }
 
-// ── 초기화 ───────────────────────────────────────
 loadState();
+applyTodayStartCorner();
+applyGeometry();
 draw();
 renderDayButtons();
+updateAlarmToggleUI();
+window.addEventListener('resize', applyGeometry);
 </script>
 
 </body>
